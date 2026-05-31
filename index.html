@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ireland Work Permits Observatory — 2009–2026</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/3.0.2/topojson.min.js"></script>
+  <link rel="stylesheet" href="src/styles.css" />
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav id="nav">
+    <div class="nav-inner">
+      <div class="nav-brand">
+        <span class="brand-flag">🇮🇪</span>
+        <span class="brand-text">Permits<em>IE</em></span>
+      </div>
+      <div class="nav-links">
+        <a href="#overview" class="nav-link active">Overview</a>
+        <a href="#timeline" class="nav-link">Timeline</a>
+        <a href="#sectors" class="nav-link">Sectors</a>
+        <a href="#nationalities" class="nav-link">Nationalities</a>
+        <a href="#counties" class="nav-link">Counties</a>
+        <a href="#explorer" class="nav-link">Explorer</a>
+        <a href="#search" class="nav-link">Company Search</a>
+      </div>
+      <div class="nav-year-badge">Live data up to Apr 2026</div>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <header id="hero">
+    <div class="hero-bg">
+      <div class="hero-grid-lines"></div>
+      <div class="hero-orb orb-1"></div>
+      <div class="hero-orb orb-2"></div>
+    </div>
+    <div class="hero-inner">
+      <div class="hero-eyebrow">
+        <span class="dot dot-green"></span>
+        Department of Enterprise, Tourism & Employment — Ireland
+      </div>
+      <h1 class="hero-title">
+        <span class="title-line-1">Work Permit</span>
+        <span class="title-line-2">Observatory</span>
+      </h1>
+      <p class="hero-sub">17 years of Irish employment permit data — every sector, nationality, county, and permit type from 2009 to 2026</p>
+      <div class="hero-stats-row">
+        <div class="hstat">
+          <span class="hstat-num" data-count="220000">0</span>
+          <span class="hstat-label">Permits issued<br/>2009–2026</span>
+        </div>
+        <div class="hstat-divider"></div>
+        <div class="hstat">
+          <span class="hstat-num" data-count="33490">0</span>
+          <span class="hstat-label">All-time high<br/>in 2023</span>
+        </div>
+        <div class="hstat-divider"></div>
+        <div class="hstat">
+          <span class="hstat-num" data-count="108">0</span>
+          <span class="hstat-label">Nationalities<br/>represented</span>
+        </div>
+        <div class="hstat-divider"></div>
+        <div class="hstat">
+          <span class="hstat-num" data-count="26">0</span>
+          <span class="hstat-label">Counties<br/>tracked</span>
+        </div>
+      </div>
+      <a href="#overview" class="hero-cta">Explore the data <span class="cta-arrow">↓</span></a>
+    </div>
+  </header>
+
+  <!-- OVERVIEW CARDS -->
+  <section id="overview" class="section">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Overview</span>
+        <h2 class="section-title">The big picture</h2>
+        <p class="section-sub">Select a year to update all charts</p>
+      </div>
+
+      <div class="year-selector">
+        <button class="year-btn" data-year="2019">2019</button>
+        <button class="year-btn" data-year="2020">2020</button>
+        <button class="year-btn" data-year="2021">2021</button>
+        <button class="year-btn" data-year="2022">2022</button>
+        <button class="year-btn" data-year="2023">2023</button>
+        <button class="year-btn active" data-year="2024">2024</button>
+        <button class="year-btn" data-year="2025">2025</button>
+        <button class="year-btn" data-year="2026">2026 ●</button>
+      </div>
+
+      <div class="overview-grid">
+        <div class="kpi-card kpi-total">
+          <div class="kpi-label">Total permits issued</div>
+          <div class="kpi-value" id="kpi-total">32,201</div>
+          <div class="kpi-change" id="kpi-change">▼ 3.8% vs 2023</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Critical skills</div>
+          <div class="kpi-value" id="kpi-cs">14,131</div>
+          <div class="kpi-share" id="kpi-cs-share">43.9% of total</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">General employment</div>
+          <div class="kpi-value" id="kpi-ge">11,927</div>
+          <div class="kpi-share" id="kpi-ge-share">37.0% of total</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Intra-company transfers</div>
+          <div class="kpi-value" id="kpi-ict">3,688</div>
+          <div class="kpi-share" id="kpi-ict-share">11.5% of total</div>
+        </div>
+      </div>
+
+      <!-- Permit type donut -->
+      <div class="chart-row">
+        <div class="chart-card chart-half">
+          <h3 class="chart-title">Permits by type <span class="chart-year-label" id="donut-year">2024</span></h3>
+          <div class="donut-wrap">
+            <canvas id="donutChart" role="img" aria-label="Permits by type donut chart"></canvas>
+            <div class="donut-center">
+              <span class="donut-total" id="donut-total">32,201</span>
+              <span class="donut-sub">total</span>
+            </div>
+          </div>
+          <div class="chart-legend" id="donut-legend"></div>
+        </div>
+
+        <div class="chart-card chart-half">
+          <h3 class="chart-title">Permits by sector <span class="chart-year-label" id="sector-bar-year">2024</span></h3>
+          <div style="position:relative;height:320px">
+            <canvas id="sectorBarChart" role="img" aria-label="Horizontal bar chart of permits by sector"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TIMELINE -->
+  <section id="timeline" class="section section-alt">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">2009 — 2026</span>
+        <h2 class="section-title">17 years of permits</h2>
+        <p class="section-sub">How Ireland's workforce migration evolved through crises, booms, and recoveries</p>
+      </div>
+
+      <div class="chart-card">
+        <div class="timeline-controls">
+          <div class="toggle-group">
+            <button class="toggle-btn active" data-mode="total">Total</button>
+            <button class="toggle-btn" data-mode="types">By type</button>
+          </div>
+          <div class="event-toggle">
+            <label class="switch-label">
+              <input type="checkbox" id="showEvents" checked />
+              <span class="switch-slider"></span>
+              Show events
+            </label>
+          </div>
+        </div>
+        <div style="position:relative;height:380px">
+          <canvas id="timelineChart" role="img" aria-label="Line chart of total permits 2009 to 2026 with historical event annotations"></canvas>
+        </div>
+        <div class="event-pills" id="eventPills"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTORS -->
+  <section id="sectors" class="section">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Industry breakdown</span>
+        <h2 class="section-title">Sector deep dive</h2>
+        <p class="section-sub">Which industries drove Irish work permit growth?</p>
+      </div>
+
+      <div class="sector-race-wrap">
+        <div class="race-header">
+          <span class="race-label">Sector permits issued — animated ranking</span>
+          <div class="race-controls">
+            <button id="racePlay" class="race-btn">▶ Play</button>
+            <button id="raceReset" class="race-btn">↺ Reset</button>
+            <span class="race-year-display" id="raceYear">2019</span>
+          </div>
+        </div>
+        <div id="raceChart" class="race-chart"></div>
+      </div>
+
+      <div class="sector-stacked-wrap chart-card" style="margin-top:2rem">
+        <h3 class="chart-title">Sector share over time — stacked area</h3>
+        <div style="position:relative;height:340px">
+          <canvas id="stackedAreaChart" role="img" aria-label="Stacked area chart of sector permits 2019 to 2026"></canvas>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- NATIONALITIES -->
+  <section id="nationalities" class="section section-alt">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Global origins</span>
+        <h2 class="section-title">Where do permit holders come from?</h2>
+        <p class="section-sub">Top nationalities receiving Irish work permits in 2025</p>
+      </div>
+
+      <div class="nationality-grid">
+        <div class="chart-card nat-chart-card">
+          <h3 class="chart-title">Top 15 nationalities (2025)</h3>
+          <div style="position:relative;height:460px">
+            <canvas id="natChart" role="img" aria-label="Horizontal bar chart showing top 15 nationalities receiving Irish work permits in 2025"></canvas>
+          </div>
+        </div>
+        <div class="nat-bubbles-wrap">
+          <div class="nat-bubble-grid" id="natBubbleGrid"></div>
+        </div>
+      </div>
+
+      <div class="chart-card" style="margin-top:2rem">
+        <h3 class="chart-title">Nationality trends over time — select countries</h3>
+        <div class="nat-toggles" id="natToggles"></div>
+        <div style="position:relative;height:300px">
+          <canvas id="natTrendChart" role="img" aria-label="Line chart of nationality permit trends 2019 to 2025"></canvas>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- COUNTIES -->
+  <section id="counties" class="section">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Geographic spread</span>
+        <h2 class="section-title">County distribution (2025)</h2>
+        <p class="section-sub">Dublin dominates — but by how much?</p>
+      </div>
+
+      <div class="county-layout">
+        <div class="chart-card county-chart-card">
+          <h3 class="chart-title">Permits by county</h3>
+          <div id="countyChartWrap" style="position:relative;height:680px">
+            <canvas id="countyChart" role="img" aria-label="Bar chart of permits by Irish county in 2025"></canvas>
+          </div>
+        </div>
+        <div class="county-stats">
+          <div class="county-stat-card county-highlight">
+            <div class="cs-flag">🏙️</div>
+            <div class="cs-body">
+              <div class="cs-label">Dublin</div>
+              <div class="cs-val">5,515</div>
+              <div class="cs-share">45.1% of all permits</div>
+            </div>
+          </div>
+          <div class="county-stat-card">
+            <div class="cs-flag">🔴</div>
+            <div class="cs-body">
+              <div class="cs-label">Cork</div>
+              <div class="cs-val">1,241</div>
+              <div class="cs-share">10.2% of all permits</div>
+            </div>
+          </div>
+          <div class="county-stat-card">
+            <div class="cs-flag">🟠</div>
+            <div class="cs-body">
+              <div class="cs-label">Galway</div>
+              <div class="cs-val">421</div>
+              <div class="cs-share">3.4% of all permits</div>
+            </div>
+          </div>
+          <div class="county-stat-card">
+            <div class="cs-flag">🟡</div>
+            <div class="cs-body">
+              <div class="cs-label">Limerick</div>
+              <div class="cs-val">527</div>
+              <div class="cs-share">4.3% of all permits</div>
+            </div>
+          </div>
+          <div class="county-outside">
+            <div class="co-label">Outside Dublin</div>
+            <div class="co-bar-track">
+              <div class="co-bar-fill" style="width:54.9%"></div>
+            </div>
+            <div class="co-val">54.9%</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- EXPLORER -->
+  <section id="explorer" class="section section-alt">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Data explorer</span>
+        <h2 class="section-title">Build your own view</h2>
+        <p class="section-sub">Filter by year range, sector, and permit type</p>
+      </div>
+
+      <div class="explorer-layout">
+        <div class="explorer-controls">
+          <div class="filter-group">
+            <label class="filter-label">Year range</label>
+            <div class="range-inputs">
+              <select id="yearFrom" class="filter-select">
+                <option value="2019">2019</option>
+                <option value="2020">2020</option>
+                <option value="2021">2021</option>
+                <option value="2022">2022</option>
+                <option value="2023">2023</option>
+                <option value="2024" selected>2024</option>
+              </select>
+              <span class="range-sep">→</span>
+              <select id="yearTo" class="filter-select">
+                <option value="2022">2022</option>
+                <option value="2023">2023</option>
+                <option value="2024">2024</option>
+                <option value="2025" selected>2025</option>
+                <option value="2026">2026</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="filter-group">
+            <label class="filter-label">Permit type</label>
+            <div class="checkbox-group" id="typeFilters">
+              <label class="check-label"><input type="checkbox" value="critical_skills" checked /> Critical Skills</label>
+              <label class="check-label"><input type="checkbox" value="general" checked /> General Employment</label>
+              <label class="check-label"><input type="checkbox" value="intra_company" checked /> Intra-Company</label>
+              <label class="check-label"><input type="checkbox" value="dependant" /> Dependant / Partner</label>
+            </div>
+          </div>
+
+          <div class="filter-group">
+            <label class="filter-label">Breakdown by</label>
+            <select id="breakdownBy" class="filter-select">
+              <option value="year">Year</option>
+              <option value="type">Permit type</option>
+              <option value="sector">Sector</option>
+            </select>
+          </div>
+
+          <button id="applyExplorer" class="apply-btn">Update chart →</button>
+        </div>
+
+        <div class="chart-card explorer-chart-card">
+          <h3 class="chart-title" id="explorerTitle">Permits 2024–2025 by year</h3>
+          <div style="position:relative;height:380px">
+            <canvas id="explorerChart" role="img" aria-label="Custom explorer chart"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- COMPANY SEARCH ENGINE -->
+  <section id="search" class="section section-white">
+    <div class="container">
+      <div class="section-header search-hero">
+        <span class="section-tag">Company search</span>
+        <h2 class="section-title">Who's hiring through permits?</h2>
+        <p class="section-sub">Search all Irish permit-issuing employers from 2026 DETE data — filter by industry</p>
+      </div>
+
+      <div class="search-box-wrap">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="companySearch" placeholder="Search company name, e.g. Google, Pfizer, Hilton..." autocomplete="off" />
+        <button class="search-clear" id="searchClear" title="Clear search">✕</button>
+      </div>
+
+      <div class="industry-filters">
+        <button class="ind-pill active" data-ind="all">🌐 All industries</button>
+        <button class="ind-pill" data-ind="tech">💻 Technology</button>
+        <button class="ind-pill" data-ind="pharma">🧬 Pharma & Lifesciences</button>
+        <button class="ind-pill" data-ind="finance">🏦 Finance & Banking</button>
+        <button class="ind-pill" data-ind="hospitality">🏨 Hotels & Hospitality</button>
+        <button class="ind-pill" data-ind="health">🏥 Healthcare</button>
+        <button class="ind-pill" data-ind="construction">🏗️ Construction</button>
+        <button class="ind-pill" data-ind="education">🎓 Education</button>
+      </div>
+
+      <div class="search-stats-bar">
+        <div><strong id="resultCount">80</strong> companies found</div>
+        <div class="sort-controls">
+          <span class="sort-label">Sort by:</span>
+          <select id="sortSelect" class="sort-select">
+            <option value="total_desc">Most permits (2025)</option>
+            <option value="total_asc">Fewest permits</option>
+            <option value="critical_desc">Most critical skills</option>
+            <option value="name_asc">Name A–Z</option>
+            <option value="trend_desc">Fastest growing</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="company-grid" id="companyGrid"></div>
+      <div class="load-more-wrap">
+        <button class="load-more-btn" id="loadMoreBtn">Load more companies</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer id="footer">
+    <div class="container">
+      <div class="footer-inner">
+
+        <div class="footer-brand">
+          <div class="footer-logo">
+            <span class="brand-flag">🇮🇪</span>
+            <span class="brand-text">Permits<em>IE</em></span>
+          </div>
+          <p class="footer-copy">
+            An independent open-data visualisation project. Not affiliated with or endorsed by the Irish Government or any government agency.
+          </p>
+          <p class="footer-copy" style="margin-top:0.5rem">
+            Data extracted directly from official DETE Excel files using an automated pipeline — no manual data entry.
+          </p>
+        </div>
+
+        <div class="footer-cols">
+          <div class="footer-col">
+            <div class="footer-col-title">Data source</div>
+            <a href="https://enterprise.gov.ie/en/what-we-do/workplace-and-skills/employment-permits/statistics/" target="_blank" class="footer-link">Official DETE statistics ↗</a>
+            <a href="https://enterprise.gov.ie/en/publications/employment-permit-statistics-2026.html" target="_blank" class="footer-link">2026 permits data ↗</a>
+            <a href="https://enterprise.gov.ie/en/privacy-statement/" target="_blank" class="footer-link">PSI open data licence ↗</a>
+          </div>
+          <div class="footer-col">
+            <div class="footer-col-title">Project</div>
+            <a href="#hero" class="footer-link">Back to top</a>
+            <a href="#search" class="footer-link">Company search</a>
+            <a href="#timeline" class="footer-link">Timeline 2009–2026</a>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="footer-bottom">
+        <div class="footer-copyright">
+          © 2026 Sai Sravan Bathini. All rights reserved. Code &amp; design are original works protected under copyright.
+        </div>
+        <div class="footer-legal">
+          Data published under the
+          <a href="https://enterprise.gov.ie/en/re-use-of-public-service-info/" target="_blank" class="footer-link-inline">PSI Licence</a>
+          by the Department of Enterprise, Tourism &amp; Employment, Ireland.
+          This visualisation is not a substitute for official government data.
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script type="module" src="src/main.js"></script>
+</body>
+</html>

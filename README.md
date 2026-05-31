@@ -57,6 +57,6 @@ Official Irish Government open data — PSI Licence:
 
 ## ©️ Copyright
 
-© 2026 Sravan Kumar. All rights reserved.
+© 2026 Sravan Bathini. All rights reserved.
 Data published under the PSI Licence by the Department of Enterprise, Tourism & Employment, Ireland.
 This is an independent project — not affiliated with or endorsed by the Irish Government.
